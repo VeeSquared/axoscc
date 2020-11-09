@@ -33,9 +33,11 @@ class PizzaIngredient
     private $price_dollar;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="smallint")
      */
     private $price_cent;
+
+    private $price;
 
     public function getId(): ?int
     {
@@ -68,24 +70,40 @@ class PizzaIngredient
 
     public function getPriceDollar(): ?int
     {
+        $this->setPrice();
         return $this->price_dollar;
     }
 
     public function setPriceDollar(int $price_dollar): self
     {
         $this->price_dollar = $price_dollar;
+        $this->setPrice();
 
         return $this;
     }
 
     public function getPriceCent(): ?int
     {
+        $this->setPrice();
         return $this->price_cent;
     }
 
     public function setPriceCent(int $price_cent): self
     {
         $this->price_cent = $price_cent;
+        $this->setPrice();
+
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+
+    private function setPrice(): self
+    {
+        $this->price = strval($this->price_dollar) . "." . strval($this->price_cent);
 
         return $this;
     }

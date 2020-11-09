@@ -25,7 +25,8 @@ class PizzaSizeRepository extends ServiceEntityRepository
                 'id'    => (int) $pizzaSize->getId(),
                 'size' => (int) $pizzaSize->getSize(),
                 'price_dollar' => (int) $pizzaSize->getPriceDollar(),
-                'price_cent' => (int) $pizzaSize->getPriceCent()
+                'price_cent' => (int) $pizzaSize->getPriceCent(),
+                'price' => (string) $pizzaSize->getPrice()
                 ];
     }
 
@@ -40,4 +41,5 @@ class PizzaSizeRepository extends ServiceEntityRepository
 
         return $pizzaSizesArray;
     }
+
 }

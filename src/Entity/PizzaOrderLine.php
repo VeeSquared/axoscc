@@ -32,17 +32,17 @@ class PizzaOrderLine
      */
     private $pizza_size_id;
 
-    private $price;
-
     /**
      * @ORM\Column(type="integer")
      */
     private $price_dollar;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="smallint")
      */
     private $price_cent;
+    
+    private $price;
 
     public function getId(): ?int
     {
@@ -85,22 +85,9 @@ class PizzaOrderLine
         return $this;
     }
 
-    
-    public function getPrice(): ?string
-    {
-        return $this->price;
-    }
-
-    private function setPrice(): self
-    {
-        $this->price = strval($this->price_dollar) + "." + strval($this->price_cent);
-
-        return $this;
-    }
-    
-
     public function getPriceDollar(): ?int
     {
+        $this->setPrice();
         return $this->price_dollar;
     }
 
@@ -114,6 +101,7 @@ class PizzaOrderLine
 
     public function getPriceCent(): ?int
     {
+        $this->setPrice();
         return $this->price_cent;
     }
 
@@ -121,6 +109,18 @@ class PizzaOrderLine
     {
         $this->price_cent = $price_cent;
         $this->setPrice();
+
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+
+    private function setPrice(): self
+    {
+        $this->price = strval($this->price_dollar) . "." . strval($this->price_cent);
 
         return $this;
     }

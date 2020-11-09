@@ -24,11 +24,11 @@ class PizzaOrderLineRepository extends ServiceEntityRepository
         return [
                 'id'    => (int) $pizzaOrderLine->getId(),
                 'pizza_order_id' => (int) $pizzaOrderLine->getPizzaOrderId(),
-                'pizza_combination_id' => (int) $pizzaOrderLine->getPizzaCombinationId(),
+                'pizza_combination_id' => (string) $pizzaOrderLine->getPizzaCombinationId(),
                 'pizza_size_id' => (int) $pizzaOrderLine->getPizzaSizeId(),
                 'price_dollar' => (int) $pizzaOrderLine->getPriceDollar(),
                 'price_cent' => (int) $pizzaOrderLine->getPriceCent(),
-                'price' => (string) $pizzaOrderLine->getPrice()
+                'price' => (string) $pizzaOrderLine->getPriceCent()
                 ];
     }
 

@@ -20,12 +20,17 @@ class PizzaCombination
     /**
      * @ORM\Column(type="integer")
      */
+    private $pizza_id;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
     private $ingredient_id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $pizza_partition_section;
+    private $section_number;
 
     /**
      * @ORM\Column(type="integer")
@@ -33,25 +38,25 @@ class PizzaCombination
     private $price_dollar;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="smallint")
      */
     private $price_cent;
 
     private $price;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $pizza_id;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): self
+    public function getPizzaId(): ?int
     {
-        $this->id = $id;
+        return $this->pizza_id;
+    }
+
+    public function setPizzaId(int $pizza_id): self
+    {
+        $this->pizza_id = $pizza_id;
 
         return $this;
     }
@@ -68,20 +73,21 @@ class PizzaCombination
         return $this;
     }
 
-    public function getPizzaPartitionSection(): ?int
+    public function getSectionNumber(): ?int
     {
-        return $this->pizza_partition_section;
+        return $this->section_number;
     }
 
-    public function setPizzaPartitionSection(int $pizza_partition_section): self
+    public function setSectionNumber(int $section_number): self
     {
-        $this->pizza_partition_section = $pizza_partition_section;
+        $this->section_number = $section_number;
 
         return $this;
     }
 
     public function getPriceDollar(): ?int
     {
+        $this->setPrice();
         return $this->price_dollar;
     }
 
@@ -89,12 +95,13 @@ class PizzaCombination
     {
         $this->price_dollar = $price_dollar;
         $this->setPrice();
-
+        
         return $this;
     }
 
     public function getPriceCent(): ?int
     {
+        $this->setPrice();
         return $this->price_cent;
     }
 
@@ -106,7 +113,6 @@ class PizzaCombination
         return $this;
     }
 
-        
     public function getPrice(): ?string
     {
         return $this->price;
@@ -114,21 +120,8 @@ class PizzaCombination
 
     private function setPrice(): self
     {
-        $this->price = strval($this->price_dollar) + "." + strval($this->price_cent);
+        $this->price = strval($this->price_dollar) . "." . strval($this->price_cent);
 
         return $this;
     }
-
-    public function getPizzaId(): ?int
-    {
-        return $this->pizza_id;
-    }
-
-    public function setPizzaId(int $pizza_id): self
-    {
-        $this->pizza_id = $pizza_id;
-
-        return $this;
-    }
-    
 }

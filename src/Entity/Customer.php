@@ -2,38 +2,30 @@
 
 namespace App\Entity;
 
+use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Customer
- *
- * @ORM\Table(name="customer")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass=CustomerRepository::class)
  */
 class Customer
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="first_name", type="string", length=100, nullable=false)
+     * @ORM\Column(type="string", length=100)
      */
-    private $firstName;
+    private $first_name;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="last_name", type="string", length=100, nullable=false)
+     * @ORM\Column(type="string", length=100)
      */
-    private $lastName;
+    private $last_name;
 
     public function getId(): ?int
     {
@@ -42,27 +34,25 @@ class Customer
 
     public function getFirstName(): ?string
     {
-        return $this->firstName;
+        return $this->first_name;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(string $first_name): self
     {
-        $this->firstName = $firstName;
+        $this->first_name = $first_name;
 
         return $this;
     }
 
     public function getLastName(): ?string
     {
-        return $this->lastName;
+        return $this->last_name;
     }
 
-    public function setLastName(string $lastName): self
+    public function setLastName(string $last_name): self
     {
-        $this->lastName = $lastName;
+        $this->last_name = $last_name;
 
         return $this;
     }
-
-
 }

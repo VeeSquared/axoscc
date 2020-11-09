@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\PizzaOrder;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,16 +19,17 @@ class PizzaOrderRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, PizzaOrder::class);
     }
+
     public function transform(PizzaOrder $pizzaOrder)
     {
         return [
                 'id'    => (int) $pizzaOrder->getId(),
                 'customer_id' => (int) $pizzaOrder->getCustomerId(),
-                'order_date' => (int) $pizzaOrder->getOrderDate(),
+                'order_date' => (string) $pizzaOrder->getOrderDate(),
                 'order_status_id' => (int) $pizzaOrder->getOrderStatusId(),
-                'total_price_dollar' => (int) $pizzaOrder->getTotalPriceDollar(),
-                'total_price_cent' => (int) $pizzaOrder->getTotalPriceCent(),
-                'price' => (string) $pizzaOrder->getTotalPrice()
+                'price_dollar' => (int) $pizzaOrder->getPriceDollar(),
+                'price_cent' => (int) $pizzaOrder->getPriceCent(),
+                'price' => (string) $pizzaOrder->getPrice()
                 ];
     }
 

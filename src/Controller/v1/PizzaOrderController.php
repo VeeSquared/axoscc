@@ -75,8 +75,9 @@ class PizzaOrderController extends ApiController
         $pizzaOrder = new PizzaOrder;
         $pizzaOrder->setCustomerId($request->get('customer_id'));
         $pizzaOrder->setOrderStatusId(2);
-        $pizzaOrder->setTotalPriceDollar(0);
-        $pizzaOrder->setTotalPricecent(0);
+        $pizzaOrder->setPriceDollar(0);
+        $pizzaOrder->setPricecent(0);
+        $pizzaOrder->setOrderDate();
         $em->persist($pizzaOrder);
         $em->flush();
 
@@ -139,17 +140,17 @@ class PizzaOrderController extends ApiController
                 return $this->respondValidationError('Failed to Parse Cents from Total Price!');
             }  
 
-            $pizzaOrder->setTotalPriceDollar($totalPriceDollar);
-            $pizzaOrder->setTotalPriceCent($totalPriceCent);
+            $pizzaOrder->setPriceDollar($totalPriceDollar);
+            $pizzaOrder->setPriceCent($totalPriceCent);
         } else {          
             // validate the total price dollar ammount
             if ($request->get('total_price_dollar')) {
-                $pizzaOrder->setTotalPriceDollar($request->get('total_price_dollar'));
+                $pizzaOrder->setPriceDollar($request->get('total_price_dollar'));
             }
 
             // validate the total price dollar ammount
             if ($request->get('total_price_cent')) {
-                $pizzaOrder->setTotalPriceCent($request->get('total_price_cent'));
+                $pizzaOrder->setPriceCent($request->get('total_price_cent'));
             }
         }
 
@@ -220,7 +221,7 @@ class PizzaOrderController extends ApiController
     **************************************************************************/
 
      /**
-    * @Route("/orders/orderlines", methods="GET")
+    * @Route("/orderlines", methods="GET")
     */
     public function getPizzaOrderLines(PizzaOrderLineRepository $pizzaOrderLineRepository)
     {
@@ -230,7 +231,7 @@ class PizzaOrderController extends ApiController
     }
 
     /**
-    * @Route("/orders/orderslines/{id}", methods="GET")
+    * @Route("/orderlines/{id}", methods="GET")
     */
     public function getPizzaOrderLine($id, PizzaOrderLineRepository $pizzaOrderLineRepository, EntityManagerInterface $em)
     {
@@ -247,7 +248,7 @@ class PizzaOrderController extends ApiController
     }
 
     /**
-    * @Route("/orders/orderlines", methods="POST")
+    * @Route("/orderlines", methods="POST")
     */
     public function createPizzaOrderLine(Request $request, PizzaOrderRepository $pizzaOrderRepository, PizzaSizeRepository $pizzaSizeRepository, PizzaCombinationRepository $pizzaCombinationRepository, EntityManagerInterface $em)
     {
@@ -285,19 +286,23 @@ class PizzaOrderController extends ApiController
         }
 
         // validate the pizza combination id
-        if (! $request->get('pizza_combination_id')) {
-            return $this->respondValidationError('Please provide a Pizza Combination ID!');
+        if (! $request->get('pizza_id')) {
+            return $this->respondValidationError('Please provide a Pizza ID!');
         }
                 
-        $pizzaCombinations  = $pizzaCombinationRepository->findAll($request->get('pizza_combination_id'));
+        $pizzaCombinations  = $pizzaCombinationRepository->getPizzaCombinationByPizzaId($request->get('pizza_id'));
                 
         if (!$pizzaCombinations) {
-            return $this->respondValidationError('Please provide a valid Pizza Combination ID');
+            return $this->respondValidationError('Please provide a valid Pizza ID');
         }
+
+        $priceDollar += $pizzaSize->getPriceDollar();
+        $priceCent += $pizzaSize->getPriceCent();
 
         foreach($pizzaCombinations as $pizzaCombination){
             $priceDollar += $pizzaCombination->getPriceDollar();
             $priceCent += $pizzaCombination->getPriceCent();
+
 
             if($priceCent > 99){
                 $dollarsFromCent = floor($priceCent / 100);
@@ -306,8 +311,8 @@ class PizzaOrderController extends ApiController
             }
         }
 
-        $totalPriceDollar = $pizzaOrder->getTotalPriceDollar();
-        $totalPriceCent = $pizzaOrder->getTotalPriceCent();
+        $totalPriceDollar = $pizzaOrder->getPriceDollar();
+        $totalPriceCent = $pizzaOrder->getPriceCent();
 
         $totalPriceDollar += $priceDollar; 
         $totalPriceCent += $priceCent;
@@ -320,14 +325,14 @@ class PizzaOrderController extends ApiController
 
         $pizzaOrderLine = new PizzaOrderLine;
         $pizzaOrderLine->setPizzaOrderId($request->get('order_id'));
-        $pizzaOrderLine->setPizzaCombinationId($request->get('pizza_combination_id'));
+        $pizzaOrderLine->setPizzaCombinationId($request->get('pizza_id'));
         $pizzaOrderLine->setPizzaSizeId($request->get('pizza_size_id'));
         $pizzaOrderLine->setPriceDollar($priceDollar);
         $pizzaOrderLine->setPriceCent($priceCent);
         $em->persist($pizzaOrderLine);
 
-        $pizzaOrder->setTotalPriceDollar($totalPriceDollar);
-        $pizzaOrder->setTotalPriceDollar($totalPriceCent);
+        $pizzaOrder->setPriceDollar($totalPriceDollar);
+        $pizzaOrder->setPriceDollar($totalPriceCent);
         $em->persist($pizzaOrder);
         $em->flush();
 
@@ -335,7 +340,7 @@ class PizzaOrderController extends ApiController
     }
 
     /**
-    * @Route("/orders/orderlines/{id}", methods="PUT")
+    * @Route("/orderlines/{id}", methods="PUT")
     */
     public function updatePizzaOrderLine(Request $request, $id, PizzaOrderLineRepository $pizzaOrderLineRepository, PizzaOrderRepository $pizzaOrderRepository, PizzaSizeRepository $pizzaSizeRepository, PizzaCombinationRepository $pizzaCombinationRepository, EntityManagerInterface $em)
     {
@@ -360,10 +365,12 @@ class PizzaOrderController extends ApiController
             }
 
             $pizzaOrderLine->setPizzaOrderId($request->get('order_id'));
+        } else {
+            $pizzaOrder = $pizzaOrderRepository->find($pizzaOrderLine->getPizzaOrderId());
         }
 
         // validate the pizza size id
-        if (! $request->get('pizza_size_id')) {
+        if ($request->get('pizza_size_id')) {
             $pizzaSize  = $pizzaSizeRepository->find($request->get('pizza_size_id'));
 
             if (!$pizzaSize) {
@@ -371,18 +378,22 @@ class PizzaOrderController extends ApiController
             }
 
             $pizzaOrderLine->setPizzaSizeId($request->get('pizza_size_id'));
+        } else {
+            $pizzaSize  = $pizzaSizeRepository->find($pizzaOrderLine->getPizzaSizeId());
         }
         
 
         // validate the pizza combination id
-        if (! $request->get('pizza_combination_id')) {
-            $pizzaCombinations  = $pizzaCombinationRepository->find($request->get('pizza_combination_id'));
+        if (! $request->get('pizza_id')) {
+            $pizzaCombinations = $pizzaCombinationRepository->find($request->get('pizza_id'));
             
             if (!$pizzaCombinations) {
-                return $this->respondValidationError('Please provide a valid Pizza Combination ID');
+                return $this->respondValidationError('Please provide a valid Pizza ID');
             }
-
-            $pizzaOrderLine->setPizzaCombinationId($request->get('pizza_combination_id'));
+            
+            $pizzaCombinationRepository->getPizzaCombinationByPizzaId($request->get('pizza_id'));
+        } else {
+            $pizzaCombinations = $pizzaCombinationRepository->getPizzaCombinationByPizzaId($pizzaOrderLine->getPizzaCombinationId());
         }
                 
         // validate the total price
@@ -404,26 +415,60 @@ class PizzaOrderController extends ApiController
 
             $pizzaOrderLine->setPriceDollar($priceDollar);
             $pizzaOrderLine->setPriceCent($priceCent);
-        } else {          
+        } else if ($request->get('price_dollar') || $request->get('price_cent')) {          
             // validate the total price dollar ammount
             if ($request->get('price_dollar')) {
-                $pizzaOrder->setTotalPriceDollar($request->get('price_dollar'));
+                $pizzaOrderLine->setPriceDollar($request->get('price_dollar'));
             }
 
             // validate the total price dollar ammount
             if ($request->get('price_cent')) {
-                $pizzaOrder->setTotalPriceCent($request->get('price_cent'));
+                $pizzaOrderLine->setPriceCent($request->get('price_cent'));
+            }
+        } else {
+            $priceDollar = 0;
+            $priceCent = 0;
+
+            $priceDollar += $pizzaSize->getPriceDollar();
+            $priceCent += $pizzaSize->getPriceCent();
+    
+            foreach($pizzaCombinations as $pizzaCombination){
+                $priceDollar += $pizzaCombination->getPriceDollar();
+                $priceCent += $pizzaCombination->getPriceCent();
+    
+    
+                if($priceCent > 99){
+                    $dollarsFromCent = floor($priceCent / 100);
+                    $priceDollar += $dollarsFromCent; 
+                    $priceCent = $priceCent % 100;
+                }
             }
         }
 
+        $totalPriceDollar = $pizzaOrder->getPriceDollar();
+        $totalPriceCent = $pizzaOrder->getPriceCent();
+    
+        $totalPriceDollar += $priceDollar; 
+        $totalPriceCent += $priceCent;
+    
+        if($priceCent > 99){
+            $totalDollarsFromCent = floor($totalPriceCent / 100);
+            $totalPriceDollar += $totalDollarsFromCent; 
+            $totalPriceCent = $totalPriceCent % 100;
+        }
+
+        $pizzaOrderLine->setPriceDollar($priceDollar);
+        $pizzaOrderLine->setPriceCent($priceCent);
+
+        $em->persist($pizzaOrderLine);
         $em->persist($pizzaOrder);
         $em->flush();
 
-        return $this->respondCreated($pizzaOrderRepository->transform($pizzaOrder));
+        return $this->respondCreated($pizzaOrderLineRepository->transform($pizzaOrderLine));
     }
 
     /**
-    * @Route("/orders/orderlines/{id}", methods="DELETE")
+    * @Route("/orderlines/{id}", methods="DELETE")
     */
     public function deletePizzaOrderLine($id, PizzaOrderLineRepository $pizzaOrderLineRepository, EntityManagerInterface $em)
     {

@@ -26,7 +26,8 @@ class PizzaIngredientRepository extends ServiceEntityRepository
                 'ingredient_name' => (string) $pizzaIngredient->getIngredientName(),
                 'ingredient_type_id' => (string) $pizzaIngredient->getIngredientTypeId(),
                 'price_dollar' => (int) $pizzaIngredient->getPriceDollar(),
-                'price_cent' => (int) $pizzaIngredient->getPriceCent()
+                'price_cent' => (int) $pizzaIngredient->getPriceCent(),
+                'price' => (string) $pizzaIngredient->getPriceCent()
                 ];
     }
 

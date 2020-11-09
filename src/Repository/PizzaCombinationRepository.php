@@ -25,10 +25,10 @@ class PizzaCombinationRepository extends ServiceEntityRepository
                 'id'    => (int) $pizzaCombination->getId(),
                 'pizza_id'    => (int) $pizzaCombination->getPizzaId(),
                 'ingredient_id' => (int) $pizzaCombination->getIngredientId(),
-                'pizza_partition_section' => (int) $pizzaCombination->getPizzaPartitionSection(),
+                'section_number' => (int) $pizzaCombination->getSectionNumber(),
                 'price_dollar' => (int) $pizzaCombination->getPriceDollar(),
                 'price_cent' => (int) $pizzaCombination->getPriceCent(),
-                'price' => (int) $pizzaCombination->getPriceCent()
+                'price' => (string) $pizzaCombination->getPrice()
                 ];
     }
 
@@ -51,15 +51,23 @@ class PizzaCombinationRepository extends ServiceEntityRepository
         ->getSingleScalarResult();
     }
 
-    public function getPizzaCombination($id,$partition_section,$ingredient_id){
+    public function getPizzaCombination($pizza_id,$partition_section,$ingredient_id){
         return $this->createQueryBuilder('i')
-        ->andWhere('i.id = :id')
-        ->setParameter('id', $id)
-        ->andWhere('i.pizza_partition_section = :section')
+        ->andWhere('i.pizza_id = :pizza_id')
+        ->setParameter('pizza_id', $pizza_id)
+        ->andWhere('i.section_number = :section')
         ->setParameter('section', $partition_section)
         ->andWhere('i.ingredient_id = :ingredientid')
         ->setParameter('ingredientid', $ingredient_id)
         ->getQuery()
         ->getOneOrNullResult();
+    }
+
+    public function getPizzaCombinationByPizzaId($pizza_id){
+        return $this->createQueryBuilder('i')
+        ->andWhere('i.pizza_id = :pizza_id')
+        ->setParameter('pizza_id', $pizza_id)
+        ->getQuery()
+        ->getResult();
     }
 }

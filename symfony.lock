@@ -119,9 +119,6 @@
     "laminas/laminas-zendframework-bridge": {
         "version": "1.1.1"
     },
-    "moneyphp/money": {
-        "version": "v3.3.1"
-    },
     "nikic/php-parser": {
         "version": "v4.10.2"
     },
@@ -182,9 +179,6 @@
     "symfony/doctrine-bridge": {
         "version": "v5.1.8"
     },
-    "symfony/dom-crawler": {
-        "version": "v5.1.8"
-    },
     "symfony/dotenv": {
         "version": "v5.1.8"
     },
@@ -215,9 +209,6 @@
             ".env"
         ]
     },
-    "symfony/form": {
-        "version": "v5.1.8"
-    },
     "symfony/framework-bundle": {
         "version": "5.1",
         "recipe": {
@@ -247,9 +238,6 @@
     "symfony/http-kernel": {
         "version": "v5.1.8"
     },
-    "symfony/intl": {
-        "version": "v5.1.8"
-    },
     "symfony/maker-bundle": {
         "version": "1.0",
         "recipe": {
@@ -259,16 +247,10 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
-    "symfony/options-resolver": {
-        "version": "v5.1.8"
-    },
     "symfony/orm-pack": {
         "version": "v2.0.0"
     },
     "symfony/polyfill-intl-grapheme": {
-        "version": "v1.20.0"
-    },
-    "symfony/polyfill-intl-icu": {
         "version": "v1.20.0"
     },
     "symfony/polyfill-intl-normalizer": {
@@ -282,12 +264,6 @@
     },
     "symfony/polyfill-php80": {
         "version": "v1.20.0"
-    },
-    "symfony/property-access": {
-        "version": "v5.1.8"
-    },
-    "symfony/property-info": {
-        "version": "v5.1.8"
     },
     "symfony/routing": {
         "version": "5.1",
@@ -315,26 +291,6 @@
     "symfony/string": {
         "version": "v5.1.8"
     },
-    "symfony/translation-contracts": {
-        "version": "v2.3.0"
-    },
-    "symfony/twig-bridge": {
-        "version": "v5.1.8"
-    },
-    "symfony/twig-bundle": {
-        "version": "5.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "5.0",
-            "ref": "fab9149bbaa4d5eca054ed93f9e1b66cc500895d"
-        },
-        "files": [
-            "config/packages/test/twig.yaml",
-            "config/packages/twig.yaml",
-            "templates/base.html.twig"
-        ]
-    },
     "symfony/var-dumper": {
         "version": "v5.1.8"
     },
@@ -343,21 +299,6 @@
     },
     "symfony/yaml": {
         "version": "v5.1.8"
-    },
-    "tbbc/money-bundle": {
-        "version": "4.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "4.0",
-            "ref": "e97ae40ca09c6fa35e69accec8833d1e10445a06"
-        },
-        "files": [
-            "config/packages/tbbc_money.yaml"
-        ]
-    },
-    "twig/twig": {
-        "version": "v3.1.1"
     },
     "webimpress/safe-writer": {
         "version": "2.1.0"

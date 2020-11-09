@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 08, 2020 at 06:11 PM
+-- Generation Time: Nov 09, 2020 at 02:02 PM
 -- Server version: 8.0.22-0ubuntu0.20.04.2
 -- PHP Version: 7.4.3
 
@@ -37,6 +37,26 @@ CREATE TABLE `customer` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `doctrine_migration_versions`
+--
+
+CREATE TABLE `doctrine_migration_versions` (
+  `version` varchar(191) COLLATE utf8_unicode_ci NOT NULL,
+  `executed_at` datetime DEFAULT NULL,
+  `execution_time` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `doctrine_migration_versions`
+--
+
+INSERT INTO `doctrine_migration_versions` (`version`, `executed_at`, `execution_time`) VALUES
+('DoctrineMigrations\\Version20201109171838', '2020-11-09 09:19:15', 509),
+('DoctrineMigrations\\Version20201109173303', '2020-11-09 09:33:11', 74);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `ingredient_type`
 --
 
@@ -61,19 +81,21 @@ INSERT INTO `ingredient_type` (`id`, `ingredient_type`) VALUES
 
 CREATE TABLE `order_status` (
   `id` int NOT NULL,
-  `status` varchar(25) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `status` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `order_status`
 --
 
 INSERT INTO `order_status` (`id`, `status`) VALUES
-(3, 'Bake'),
-(4, 'Box'),
-(5, 'Delivery'),
-(1, 'Order Placed'),
-(2, 'Prep');
+(1, 'Cancelled'),
+(2, 'Order Started'),
+(3, 'Order Placed'),
+(4, 'Prep'),
+(5, 'Bake'),
+(6, 'Box'),
+(7, 'Delivery');
 
 -- --------------------------------------------------------
 
@@ -83,9 +105,9 @@ INSERT INTO `order_status` (`id`, `status`) VALUES
 
 CREATE TABLE `pizza_combination` (
   `id` int NOT NULL,
-  `pizza_id` int NOT NULL DEFAULT '0',
+  `pizza_id` int NOT NULL,
   `ingredient_id` int NOT NULL,
-  `pizza_partition_section` int NOT NULL,
+  `section_number` int NOT NULL,
   `price_dollar` int NOT NULL,
   `price_cent` smallint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -144,8 +166,8 @@ CREATE TABLE `pizza_order` (
   `customer_id` int NOT NULL,
   `order_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `order_status_id` int NOT NULL,
-  `total_price_dollar` int NOT NULL,
-  `total_price_cent` smallint NOT NULL
+  `price_dollar` int NOT NULL,
+  `price_cent` smallint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -197,50 +219,46 @@ ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `doctrine_migration_versions`
+--
+ALTER TABLE `doctrine_migration_versions`
+  ADD PRIMARY KEY (`version`);
+
+--
 -- Indexes for table `ingredient_type`
 --
 ALTER TABLE `ingredient_type`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `ingredient_type` (`ingredient_type`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `order_status`
 --
 ALTER TABLE `order_status`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `status` (`status`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `pizza_combination`
 --
 ALTER TABLE `pizza_combination`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `ingredient_id` (`ingredient_id`) USING BTREE;
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `pizza_ingredient`
 --
 ALTER TABLE `pizza_ingredient`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `ingredient_name` (`ingredient_name`),
-  ADD KEY `FK_PIZZAINGREDIENT_INGREDIENTTYPE` (`ingredient_type_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `pizza_order`
 --
 ALTER TABLE `pizza_order`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `FK_PIZZAORDER_CUSTOMER` (`customer_id`),
-  ADD KEY `FK_PIZZAORDER_ORDERSTATUS` (`order_status_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `pizza_order_line`
 --
 ALTER TABLE `pizza_order_line`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `FK_PIZZAORDERLINE_PIZZAORDER` (`pizza_order_id`),
-  ADD KEY `FK_PIZZAORDERLINE_PIZZACOMBINATION` (`pizza_combination_id`),
-  ADD KEY `FK_PIZZAORDERLINE_PIZZASIZE` (`pizza_size_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `pizza_size`
@@ -256,7 +274,7 @@ ALTER TABLE `pizza_size`
 -- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `ingredient_type`
@@ -268,7 +286,7 @@ ALTER TABLE `ingredient_type`
 -- AUTO_INCREMENT for table `order_status`
 --
 ALTER TABLE `order_status`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `pizza_combination`
@@ -286,49 +304,19 @@ ALTER TABLE `pizza_ingredient`
 -- AUTO_INCREMENT for table `pizza_order`
 --
 ALTER TABLE `pizza_order`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `pizza_order_line`
 --
 ALTER TABLE `pizza_order_line`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `pizza_size`
 --
 ALTER TABLE `pizza_size`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `pizza_combination`
---
-ALTER TABLE `pizza_combination`
-  ADD CONSTRAINT `FK_PIZZACOMBINATION_PIZZAINGREDIENT` FOREIGN KEY (`ingredient_id`) REFERENCES `pizza_ingredient` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
--- Constraints for table `pizza_ingredient`
---
-ALTER TABLE `pizza_ingredient`
-  ADD CONSTRAINT `FK_PIZZAINGREDIENT_INGREDIENTTYPE` FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
--- Constraints for table `pizza_order`
---
-ALTER TABLE `pizza_order`
-  ADD CONSTRAINT `FK_PIZZAORDER_CUSTOMER` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `FK_PIZZAORDER_ORDERSTATUS` FOREIGN KEY (`order_status_id`) REFERENCES `order_status` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
--- Constraints for table `pizza_order_line`
---
-ALTER TABLE `pizza_order_line`
-  ADD CONSTRAINT `FK_PIZZAORDERLINE_PIZZAORDER` FOREIGN KEY (`pizza_order_id`) REFERENCES `pizza_order` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `FK_PIZZAORDERLINE_PIZZASIZE` FOREIGN KEY (`pizza_size_id`) REFERENCES `pizza_size` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

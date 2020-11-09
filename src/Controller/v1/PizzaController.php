@@ -104,7 +104,7 @@ class PizzaController extends ApiController
                         $pizzaCombination = new PizzaCombination;
                         $pizzaCombination->setPizzaId($nextId);
                         $pizzaCombination->setIngredientId($ingredientId);
-                        $pizzaCombination->setPizzaPartitionSection($section_number);
+                        $pizzaCombination->setSectionNumber($section_number);
                         $pizzaCombination->setPriceDollar($priceDollar);
                         $pizzaCombination->setPriceCent($priceCent);
                         $em->persist($pizzaCombination);
